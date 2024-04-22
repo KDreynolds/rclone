@@ -292,9 +292,17 @@ using remote authorization you would do this:
 		if err != nil {
 			return err
 		}
-		return doConfig(args[0], in, func(opts config.UpdateRemoteOpt) (*fs.ConfigOut, error) {
+		err = doConfig(args[0], in, func(opts config.UpdateRemoteOpt) (*fs.ConfigOut, error) {
 			return config.CreateRemote(context.Background(), args[0], args[1], in, opts)
 		})
+		if err != nil {
+			return err
+		}
+
+		// Append the security warning about unencrypted configurations
+		fmt.Fprintln(os.Stderr, "\nWARNING: By default, rclone configuration files are not encrypted, which may pose a security risk. It is highly recommended to encrypt your configuration file to protect sensitive information. For details on how to encrypt your configuration, visit https://rclone.org/docs/#configuration-encryption.\n")
+
+		return nil
 	},
 }
 
